@@ -49,6 +49,19 @@ export const loginSchema = z.object({
   }),
 });
 
+export const refreshTokenSchema = z.object({
+  body: z.object({
+    refreshToken: z
+      .string({
+        required_error: 'Refresh token is required',
+        invalid_type_error: 'Refresh token must be a string',
+      })
+      .min(1, { message: 'Refresh token is required' }),
+  }),
+});
+
 export type RegisterInput = TypeOf<typeof registerSchema>['body'];
 
 export type LoginInput = TypeOf<typeof loginSchema>['body'];
+
+export type RefreshTokenInput = TypeOf<typeof refreshTokenSchema>['body'];
