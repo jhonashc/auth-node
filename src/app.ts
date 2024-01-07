@@ -4,6 +4,8 @@ import morgan from 'morgan';
 import express, { Application } from 'express';
 
 import { envs } from './config';
+import { exceptionHandler } from './middlewares';
+import { AppRoutes } from './routes';
 
 class Server {
   private app: Application;
@@ -18,6 +20,7 @@ class Server {
   private initialize(): void {
     this.middlewares();
     this.routes();
+    this.advancedMiddlewares();
   }
 
   private middlewares(): void {
@@ -28,7 +31,13 @@ class Server {
     this.app.use(express.urlencoded({ extended: true }));
   }
 
-  private routes(): void {}
+  private advancedMiddlewares(): void {
+    this.app.use(exceptionHandler);
+  }
+
+  private routes(): void {
+    this.app.use(AppRoutes.routes);
+  }
 
   listen(): void {
     this.app.listen(this.port, () => {
