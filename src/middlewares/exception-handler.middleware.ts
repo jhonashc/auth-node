@@ -1,4 +1,5 @@
 import { ZodError } from 'zod';
+import { JsonWebTokenError } from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 
 import { CustomError } from '../errors';
@@ -19,6 +20,13 @@ export const exceptionHandler = (error: Error, req: Request, res: Response, next
     return res.status(400).json({
       status: false,
       message: errors.length === 1 ? errors.join('') : errors,
+    });
+  }
+
+  if (error instanceof JsonWebTokenError) {
+    return res.status(401).json({
+      status: false,
+      message: 'The token is invalid',
     });
   }
 
