@@ -4,7 +4,7 @@ import { envs } from '../config';
 import { CustomError } from '../errors';
 import { BcryptHelper, JwtHelper } from '../helpers';
 import { UserPayload } from '../interfaces';
-import { RegisterInput } from '../schemas';
+import { LoginInput, RegisterInput } from '../schemas';
 
 import prisma from '../libs/db';
 
@@ -70,6 +70,43 @@ export class AuthService {
         id: createdUser.id,
         username: createdUser.username,
         email: createdUser.email,
+      },
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async login(loginInput: LoginInput) {
+    const { userOrEmail, password } = loginInput;
+
+    const userFound: User | null = await prisma.user.findFirst({
+      where: {
+        OR: [{ username: userOrEmail }, { email: userOrEmail }],
+      },
+    });
+
+    if (!userFound) {
+      throw CustomError.unauthorized('The credentials entered are incorrect');
+    }
+
+    const comparedPasswords: boolean = await BcryptHelper.comparePasswords(password, userFound.password);
+
+    if (!comparedPasswords) {
+      throw CustomError.unauthorized('The credentials entered are incorrect');
+    }
+
+    const payload: UserPayload = { userId: userFound.id };
+
+    const accessToken: string = JwtHelper.generateToken(payload, envs.ACCESS_TOKEN_SECRET_KEY, 5);
+
+    const refreshToken: string = JwtHelper.generateToken(payload, envs.REFRESH_TOKEN_SECRET_KEY, 15);
+
+    return {
+      status: true,
+      user: {
+        id: userFound.id,
+        username: userFound.username,
+        email: userFound.email,
       },
       accessToken,
       refreshToken,
