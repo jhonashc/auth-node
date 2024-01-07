@@ -6,7 +6,7 @@ import { AuthService } from '../services';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  register = (req: Request<{}, {}, RegisterInput>, res: Response, next: NextFunction) => {
+  register = (req: Request<{}, {}, RegisterInput>, res: Response, next: NextFunction): void => {
     const registerInput: RegisterInput = req.body;
 
     this.authService
@@ -15,7 +15,7 @@ export class AuthController {
       .catch((error) => next(error));
   };
 
-  login = (req: Request<{}, {}, LoginInput>, res: Response, next: NextFunction) => {
+  login = (req: Request<{}, {}, LoginInput>, res: Response, next: NextFunction): void => {
     const loginInput: LoginInput = req.body;
 
     this.authService
@@ -24,7 +24,7 @@ export class AuthController {
       .catch((error) => next(error));
   };
 
-  refreshToken = (req: Request<{}, {}, RefreshTokenInput>, res: Response, next: NextFunction) => {
+  refreshToken = (req: Request<{}, {}, RefreshTokenInput>, res: Response, next: NextFunction): void => {
     const refreshTokenInput: RefreshTokenInput = req.body;
 
     this.authService
