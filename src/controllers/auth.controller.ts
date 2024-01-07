@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { LoginInput, RegisterInput } from '../schemas';
+import { LoginInput, RefreshTokenInput, RegisterInput } from '../schemas';
 import { AuthService } from '../services';
 
 export class AuthController {
@@ -21,6 +21,15 @@ export class AuthController {
     this.authService
       .login(loginInput)
       .then((loginResponse) => res.json(loginResponse))
+      .catch((error) => next(error));
+  };
+
+  refreshToken = (req: Request<{}, {}, RefreshTokenInput>, res: Response, next: NextFunction) => {
+    const refreshTokenInput: RefreshTokenInput = req.body;
+
+    this.authService
+      .refreshToken(refreshTokenInput)
+      .then((refreshResponse) => res.json(refreshResponse))
       .catch((error) => next(error));
   };
 }
