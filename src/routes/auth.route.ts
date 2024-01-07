@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { AuthController } from '../controllers';
 import { validateRequest } from '../middlewares';
-import { loginSchema, registerSchema } from '../schemas';
+import { loginSchema, refreshTokenSchema, registerSchema } from '../schemas';
 import { AuthService } from '../services';
 
 export class AuthRoutes {
@@ -14,6 +14,7 @@ export class AuthRoutes {
 
     router.post('/register', validateRequest(registerSchema), authController.register);
     router.post('/login', validateRequest(loginSchema), authController.login);
+    router.post('/refresh-token', validateRequest(refreshTokenSchema), authController.refreshToken);
 
     return router;
   }
