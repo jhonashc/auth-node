@@ -10,4 +10,8 @@ export const envs = {
   MYSQL_HOST: get('MYSQL_HOST').required().asString(),
   MYSQL_PORT: get('MYSQL_PORT').required().asPortNumber(),
   DATABASE_URL: get('DATABASE_URL').required().asString(),
+  ACCESS_TOKEN_SECRET_KEY: get('ACCESS_TOKEN_SECRET_KEY').required().asString(),
+  ACCESS_TOKEN_EXPIRATION_TIME: get('ACCESS_TOKEN_EXPIRATION_TIME').required().asInt(),
+  REFRESH_TOKEN_SECRET_KEY: get('REFRESH_TOKEN_SECRET_KEY').required().asString(),
+  REFRESH_TOKEN_EXPIRATION_TIME: get('REFRESH_TOKEN_EXPIRATION_TIME').required().asInt(),
 };
