@@ -32,4 +32,23 @@ export const registerSchema = z.object({
     }),
 });
 
+export const loginSchema = z.object({
+  body: z.object({
+    userOrEmail: z
+      .string({
+        required_error: 'Username or email required',
+        invalid_type_error: 'Username or email must be a string',
+      })
+      .min(1, { message: 'Username or email required' }),
+    password: z
+      .string({
+        required_error: 'Password is required',
+        invalid_type_error: 'Password must be a string',
+      })
+      .min(1, { message: 'Password is required' }),
+  }),
+});
+
 export type RegisterInput = TypeOf<typeof registerSchema>['body'];
+
+export type LoginInput = TypeOf<typeof loginSchema>['body'];
