@@ -4,7 +4,7 @@ import { envs } from '../config';
 import { CustomError } from '../errors';
 import { BcryptHelper, JwtHelper } from '../helpers';
 import { UserPayload } from '../interfaces';
-import { LoginInput, RegisterInput } from '../schemas';
+import { LoginInput, RefreshTokenInput, RegisterInput } from '../schemas';
 
 import prisma from '../libs/db';
 
@@ -97,9 +97,52 @@ export class AuthService {
 
     const payload: UserPayload = { userId: userFound.id };
 
-    const accessToken: string = JwtHelper.generateToken(payload, envs.ACCESS_TOKEN_SECRET_KEY, 5);
+    const accessToken: string = JwtHelper.generateToken(
+      payload,
+      envs.ACCESS_TOKEN_SECRET_KEY,
+      envs.ACCESS_TOKEN_EXPIRATION_TIME,
+    );
 
-    const refreshToken: string = JwtHelper.generateToken(payload, envs.REFRESH_TOKEN_SECRET_KEY, 15);
+    const refreshToken: string = JwtHelper.generateToken(
+      payload,
+      envs.REFRESH_TOKEN_SECRET_KEY,
+      envs.REFRESH_TOKEN_EXPIRATION_TIME,
+    );
+
+    return {
+      status: true,
+      user: {
+        id: userFound.id,
+        username: userFound.username,
+        email: userFound.email,
+      },
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async refreshToken(refreshTokenInput: RefreshTokenInput) {
+    const { refreshToken } = refreshTokenInput;
+
+    const { userId }: UserPayload = JwtHelper.verifyToken(refreshToken, envs.REFRESH_TOKEN_SECRET_KEY);
+
+    const userFound: User | null = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!userFound) {
+      throw CustomError.unauthorized('The token is invalid');
+    }
+
+    const payload: UserPayload = { userId: userFound.id };
+
+    const accessToken: string = JwtHelper.generateToken(
+      payload,
+      envs.ACCESS_TOKEN_SECRET_KEY,
+      envs.REFRESH_TOKEN_EXPIRATION_TIME,
+    );
 
     return {
       status: true,
